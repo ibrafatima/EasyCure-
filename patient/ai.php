@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/admin.css">
+
+    <title>Dashboard</title>
+    <style>
+
+.profile-link {
+        text-decoration: none; /* Remove underline decoration */
+        color: inherit; /* Maintain default link color */
+    }
+        .dashbord-tables {
+            animation: transitionIn-Y-over 0.5s;
+        }
+
+        .filter-container {
+            animation: transitionIn-Y-bottom 0.5s;
+        }
+
+        .sub-table,
+        .anime {
+            animation: transitionIn-Y-bottom 0.5s;
+        }
+
+        .chat-container {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-output {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 300px; /* Limit height and enable scrolling */
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 15px;
+            max-width: 70%;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+            align-self: flex-end; /* Align user messages to the right */
+        }
+
+        .doctor-message {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .chat-input {
+            width: calc(100% - 70px);
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .chat-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .chat-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <?php
+
+    //learn from w3schools.com
+
+    session_start();
+
+    if(isset($_SESSION["user"])){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='p'){
+            header("location: ../login.php");
+        }else{
+            $useremail=$_SESSION["user"];
+        }
+
+    }else{
+        header("location: ../login.php");
+    }
+    
+
+    //import database
+    include("../connection.php");
+    $userrow = $database->query("select * from patient where pemail='$useremail'");
+    $userfetch=$userrow->fetch_assoc();
+    $userid= $userfetch["pid"];
+    $username=$userfetch["pname"];
+
+
+    //echo $userid;
+    //echo $username;
+    
+    ?>
+    <div class="container">
+        <div class="menu">
+            <table class="menu-container" border="0">
+                <tr>
+                    <td style="padding:10px" colspan="2">
+                    <a href="settings.php" class="profile-link">
+    <table border="0" class="profile-container">
+        <tr>
+            <td width="30%" style="padding-left:20px">
+                <img src="../img/user.png" alt="" width="100%" style="border-radius:50%">
+            </td>
+            <td style="padding:0px;margin:0px;">
+                <p class="profile-title">
+                    <?php echo substr($username, 0, 13) ?>..
+                </p>
+                <p class="profile-subtitle">
+                    <?php echo substr($useremail, 0, 22) ?>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <a href="../logout.php">
+                    <input type="button" value="Log out" class="logout-btn btn-primary-soft btn">
+                </a>
+            </td>
+        </tr>
+    </table>
+</a>
+
+                    </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-home menu-active ">
+                        <a href="index.php" class="non-style-link-menu ">
+                            <div>
+                                <p class="menu-text">Home</p>
+                        </a>
+        </div></a>
+        </td>
+        </tr>
+        <tr class="menu-row" >
+                    <td class="menu-btn menu-icon-ai">
+                        <a href="ai.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">Ask Ai</p></a></div>
+                    </td>
+                </tr>
+        <tr class="menu-row">
+            <td class="menu-btn menu-icon-doctor">
+                <a href="doctors.php" class="non-style-link-menu">
+                    <div>
+                        <p class="menu-text">All Doctors</p>
+                </a>
+    </div>
+    </td>
+    </tr>
+
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-session">
+            <a href="schedule.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">Scheduled Sessions</p>
+                </div>
+            </a>
+        </td>
+    </tr>
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-appoinment">
+            <a href="appointment.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">My Bookings</p>
+            </a></div>
+        </td>
+    </tr>
+
+    </table>
+    </div>
+    <div class="dash-body" style="margin-top: 15px">
+        <table border="0" width="100%" style=" border-spacing: 0;margin:0;padding:0;">
+
+            <tr>
+
+                
+                <td width="60%">
+                    <form action="schedule.php" method="post" style="display: flex ">
+
+                        <input type="search" name="search" class="input-text "
+                            placeholder="Search Doctor and We will Find The Session Available" list="doctors"
+                            style="width:100%;">&nbsp;&nbsp;
+
+                        <?php
+    echo '<datalist id="doctors">';
+    $list11 = $database->query("select  docname,docemail from  doctor;");
+
+    for ($y=0;$y<$list11->num_rows;$y++){
+        $row00=$list11->fetch_assoc();
+        $d=$row00["docname"];
+        
+        echo "<option value='$d'><br/>";
+        
+    };
+
+echo ' </datalist>';
+?>
+
+
+                        <input type="Submit" value="Search" class="login-btn btn-primary btn"
+                            style="padding-left: 25px;padding-right: 25px;padding-top: 10px;padding-bottom: 10px;">
+
+                        <br>
+
+                </td>
+
+                <td width="25%">
+                    <p style="font-size: 14px;color: rgb(119, 119, 119);padding: 0;margin: 0;text-align: right;">
+                        Today's Date
+                    </p>
+                    <p class="heading-sub12" style="padding: 0;margin: 0;">
+                        <?php 
+                                date_default_timezone_set('Asia/Kolkata');
+        
+                                $today = date('Y-m-d');
+                                echo $today;
+
+
+                                $patientrow = $database->query("select  * from  patient;");
+                                $doctorrow = $database->query("select  * from  doctor;");
+                                $appointmentrow = $database->query("select  * from  appointment where appodate>='$today';");
+                                $schedulerow = $database->query("select  * from  schedule where scheduledate='$today';");
+
+
+                                ?>
+                    </p>
+                </td>
+                <td width="10%">
+                    <button class="btn-label" style="display: flex;justify-content: center;align-items: center;"><img
+                            src="../img/calendar.svg" width="100%"></button>
+                </td>
+
+
+            </tr>
+            <tr>
+                <td colspan="4">
+
+
+                    <table class="filter-container doctor-header patient-header"
+                        style="border: none;width:96% ; margin-left:7rem; margin-top:2rem;" border="0">
+                        <tr>
+                           <td>
+    <h3>Ask your personal AI</h3>
+    <h1><?php echo $username; ?>.</h1>
+    <p>Get personalized medical advice and recommendations from our AI-powered system. Just enter your symptoms in the chatbox below and get instant feedback.</p>
+    <h3>Find your Best suitable Doctor</h3>
+    <br>
+</td>
+
+                            <td style="">
+                            <img src="../img/bot.png" width="50%" alt="">
+                            </td>
+
+                        </tr>
+
+            <tr>
+                <td colspan="4">
+
+
+                    <table class="filter-container doctor-header patient-header"
+                        style="border: none;width:96% ; margin-left:-4rem; margin-top:2rem;" border="0">
+                        <tr>
+                           <td>
+    <p>Enter your symptons in the box , if you have more than one use "," or if yove have space use "_" and then hit send .</p>
+    <h3>Note: the model is under the training purpose (sometime it can take time to genrate the response)</h3>
+    <br>
+</td>
+
+                            <td style="text-align: right; width:50%;">
+                            <center>
+                    <div class="chat-container">
+        <div id="chat-output" class="chat-output"></div>
+        <div class="input-container">
+            <input type="text" id="symptoms-input" class="chat-input" placeholder="Enter symptoms...">
+            <button id="submit-btn" class="chat-btn">Send</button>
+        </div>
+    </div>
+                    </center>
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+
+                </td>
+            </tr>
+            
+
+                   
+
+
+        </table>
+        
+
+    </div>
+    </div>
+
+    <script>
+        function fetchDoctorsByDisease(disease) {
+        return fetch(`fetch_doctor.php?disease=${encodeURIComponent(disease)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            });
+    }
+    
+    document.getElementById('submit-btn').addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+
+        const url = 'https://vibhawdoctorapi.onrender.com/predict';
+        const symptomsInput = document.getElementById('symptoms-input').value;
+        const symptoms = symptomsInput.split(',').map(symptom => symptom.trim());
+
+        const payload = {
+            symptoms: symptoms
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const chatOutput = document.getElementById('chat-output');
+            const predictedDisease = data.predicted_disease || "No disease predicted";
+            const chatMessage = `<div class="chat-message"><strong>You:</strong> ${symptomsInput}<br><strong>Disease:</strong> ${predictedDisease}</div>`;
+            chatOutput.innerHTML += chatMessage;
+
+            // After receiving the predicted disease from the AI chat
+            fetchDoctorsByDisease(predictedDisease)
+                .then(doctorsData => {
+                    if (doctorsData.length > 0) {
+                        // Display fetched doctors in the chat output
+                        chatOutput.innerHTML += `<div class="chat-message"><strong>Available doctors for ${predictedDisease}:</strong></div>`;
+                        doctorsData.forEach(doctor => {
+                            chatOutput.innerHTML += `<div class="chat-message">Doctor: ${doctor.docname}, Email: ${doctor.docemail}</div>`;
+                        });
+                    } else {
+                        // Display a message if no doctors found
+                        chatOutput.innerHTML += `<div class="chat-message">No doctors found for ${predictedDisease}</div>`;
+                    }
+                })
+                .catch(error => {
+                    // Display an error message if there's an issue fetching doctors
+                    chatOutput.innerHTML += `<div class="chat-message error">Error fetching doctors: ${error.message}</div>`;
+                });
+
+            document.getElementById('symptoms-input').value = ''; // Clear input field after submission
+        })
+        .catch(error => {
+            const chatOutput = document.getElementById('chat-output');
+            chatOutput.innerHTML += `<div class="chat-message error">Error: ${error.message}</div>`;
+        });
+    });
+</script>
+
+
+</body>
+
+</html>
